@@ -16,7 +16,7 @@ LDLIBS = -lcdk -lcurses
 
 EXECFILE = hw6EXE
 
-OBJS = cdkexample.o
+OBJS = prog6.o
 
 
 all: $(EXECFILE)
