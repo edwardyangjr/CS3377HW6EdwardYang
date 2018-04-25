@@ -1,26 +1,40 @@
-/*
- * Usage of CDK Matrix
- *
- * File:   example1.cc
- * Author: Stephen Perkins
- * Email:  stephen.perkins@utdallas.edu
- */
+//Edward Yang
+//eiy160030
+//cs 3377.502
+//4/24/18
 
 #include <iostream>
 #include "cdk.h"
+#include <stdint.h>
+#include <fstream>
 
-
-#define MATRIX_WIDTH 4
-#define MATRIX_HEIGHT 3
-#define BOX_WIDTH 15
+#define MATRIX_WIDTH 3
+#define MATRIX_HEIGHT 5
+#define BOX_WIDTH 20
 #define MATRIX_NAME_STRING "Test Matrix"
 
 using namespace std;
 
+class BinaryFileHeader
+{
+  public:
+  uint32_t magicNumber;
+  uint32_t versionNumber;
+  uint64_t numRecords;
+};
 
 int main()
 {
+  BinaryFileHeader *myHeader = new BinaryFileHeader();
+  
+  ifstream binInfile("cs3377.bin", ios::in | ios::binary);
+  if(!binInfile.is_open()){
+    cerr << "Binary File error." << endl;
+    exit(-1);
+  }
 
+  binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+ 
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
@@ -68,8 +82,21 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
-  drawCDKMatrix(myMatrix, true);    /* required  */
+  //setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  char* currentLine = new char[256];
+  sprintf(currentLine, "Magic: 0x%X", myHeader->magicNumber);
+  setCDKMatrixCell(myMatrix, 1, 1, currentLine);
+
+  sprintf(currentLine, "Version: %u", myHeader->versionNumber);
+  setCDKMatrixCell(myMatrix, 1, 2, currentLine);
+
+  sprintf(currentLine, "NumRecords: %lu", myHeader->numRecords);
+  setCDKMatrixCell(myMatrix, 1, 3, currentLine);
+  
+  //sprintf(currentLine, "%s", myHeader);
+  //setCDKMatrixCell(myMatrix, 2, 1, currentLine);
+  
+  drawCDKMatrix(myMatrix, true);    // needed
 
   /* So we can see results, pause until a key is pressed. */
   unsigned char x;
